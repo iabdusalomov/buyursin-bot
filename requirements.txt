@@ -11,7 +11,7 @@ greenlet==2.0.2
 idna==3.4
 magic-filter==1.0.9
 multidict==6.0.4
-python-dotenv== 1.0.0
+python-dotenv==1.0.0
 pytz==2023.3
 SQLAlchemy==2.0.15
 typing_extensions==4.6.1
