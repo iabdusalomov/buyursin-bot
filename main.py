@@ -1,4 +1,4 @@
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 import aiobot.handlers.commands as commands
 import aiobot.handlers.user as user
 import aiobot.handlers.ad as ad
@@ -10,18 +10,18 @@ from aiobot.database import db
 
 logging.basicConfig(level=logging.INFO)
 
-# load_dotenv()
+load_dotenv()
 
 # Простой способ загрузки .env без python-dotenv
-import os
-try:
-    with open('.env', 'r') as f:
-        for line in f:
-            if '=' in line and not line.startswith('#'):
-                key, value = line.strip().split('=', 1)
-                os.environ[key] = value.strip('"').strip("'")
-except FileNotFoundError:
-    pass
+# import os
+# try:
+#     with open('.env', 'r') as f:
+#         for line in f:
+#             if '=' in line and not line.startswith('#'):
+#                 key, value = line.strip().split('=', 1)
+#                 os.environ[key] = value.strip('"').strip("'")
+# except FileNotFoundError:
+#     pass
 
 dis.include_router(commands.router)
 dis.include_router(ad.router)
