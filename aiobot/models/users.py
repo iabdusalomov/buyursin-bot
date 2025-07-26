@@ -8,6 +8,7 @@ from aiobot.database import Base, db
 
 # auto create id
 class Users(Base):
+    __tablename__ = "users"
     user_id = Column(String(50), unique=True)
     full_name = Column(String(30))
     phone_number = Column(String(30))
@@ -28,8 +29,8 @@ class Users(Base):
     @classmethod
     async def get(cls, user_id):
         query = select(cls).where(cls.user_id == user_id)
-        users = await db.execute(query)
-        user, = users.first() or None,
+        result = await db.execute(query)
+        user = result.scalars().first()
         return user
 
     @classmethod
@@ -55,3 +56,10 @@ class Users(Base):
         await db.execute(query)
         await cls.commit()
         return True
+
+    @classmethod
+    async def get_language(cls, user_id):
+        user = await cls.get(user_id)
+        if user and hasattr(user, "lang"):
+            return user.lang
+        return "ru"

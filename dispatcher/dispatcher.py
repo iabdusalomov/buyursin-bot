@@ -1,9 +1,13 @@
-from aiogram import Dispatcher, Bot
-from dotenv import load_dotenv
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
-import os
+from aiogram import Bot, Dispatcher
+from config import BOT_TOKEN
 
-load_dotenv()
-
-bot = Bot(os.getenv('TOKEN'))
-dis = Dispatcher(bot, storage=MemoryStorage())
+bot = Bot(token=BOT_TOKEN)
+try:
+    from aiogram.fsm.storage.redis import RedisStorage
+    storage = RedisStorage.from_url("redis://localhost:6379/0")
+    print("[INFO] FSM: RedisStorage enabled")
+except ImportError:
+    from aiogram.fsm.storage.memory import MemoryStorage
+    storage = MemoryStorage()
+    print("[INFO] FSM: MemoryStorage enabled (no redis)")
+dis = Dispatcher(storage=storage)

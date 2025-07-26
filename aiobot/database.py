@@ -11,16 +11,16 @@ class TableBase:
 
     @declared_attr
     def __tablename__(self) -> str:
-        name: str = self.__name__.lower()
+        name = self.__name__.lower()
         if name.endswith('y'):
             return name[:-1] + 'ies'
-        if any([name.endswith(i) for i in ('s', 'ss', 'sh', 'ch', 'x', 'z')]):
-            return name + 'es'
+        if name.endswith('s'):
+            return name
         return name + 's'
 
     @classmethod
     async def create(cls, pk, **kwargs):
-        user = cls(pk=pk, **kwargs)  # noqa
+        user = cls(pk=pk, **kwargs)
         db.add(user)
         await cls.commit()
         return user
@@ -77,12 +77,8 @@ class AsyncDatabaseSession:
     def __getattr__(self, name):
         return getattr(self._session, name)
 
-    def init(self):
-        self._engine = create_async_engine(
-            Config.DB_CONFIG,
-            future=True,
-            echo=True,
-        )
+    async def init(self):
+        self._engine = create_async_engine(Config.DB_CONFIG, echo=True, future=True)
         self._session = sessionmaker(self._engine, expire_on_commit=False, class_=AsyncSession)()  # noqa
 
     async def create_all(self):
@@ -92,6 +88,16 @@ class AsyncDatabaseSession:
     async def drop_all(self):
         async with self._engine.begin() as conn:
             await conn.run_sync(Base.metadata.drop_all)
+
+    # async def create_all(self):
+    #     # Synchronous operation to create all tables
+    #     with self._engine.begin() as conn:
+    #         Base.metadata.create_all(conn)
+
+    # async def drop_all(self):
+    #     # Synchronous operation to drop all tables
+    #     with self._engine.begin() as conn:
+    #         Base.metadata.drop_all(conn)
 
 
 db = AsyncDatabaseSession()

@@ -1,8 +1,9 @@
+from aiogram import Router
 from aiogram.types import Message
-from dispatcher import dis
+from aiogram.filters import Command
 
+router = Router()
 
-@dis.message_handler(commands=['start'])
-async def send_welcome(msg: Message):
-    user_id = str(msg.from_user.id)
-    await msg.answer('Hi')
+# @router.message(Command('start'))
+# async def start_command(message: Message):
+#     ...
