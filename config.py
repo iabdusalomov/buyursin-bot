@@ -1,7 +1,17 @@
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
+
+# Простой способ загрузки .env без python-dotenv
+try:
+    with open('.env', 'r') as f:
+        for line in f:
+            if '=' in line and not line.startswith('#'):
+                key, value = line.strip().split('=', 1)
+                os.environ[key] = value.strip('"').strip("'")
+except FileNotFoundError:
+    pass
 
 
 class Config:
