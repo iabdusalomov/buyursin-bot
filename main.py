@@ -10,10 +10,25 @@ from aiobot.database import db
 import threading
 import os
 from datetime import datetime
+import sys
 
 logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
+
+# Проверка на единственный экземпляр
+def check_single_instance():
+    """Проверяет, что запущен только один экземпляр бота"""
+    import socket
+    
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.bind(('localhost', 8081))  # Порт для проверки
+        print("[INFO] Бот запущен в единственном экземпляре")
+        return True
+    except OSError:
+        print("[ERROR] Обнаружен другой экземпляр бота! Завершение...")
+        return False
 
 # Простой способ загрузки .env без python-dotenv
 # import os
@@ -39,7 +54,7 @@ def run_fake_server():
 # Функция для поддержания активности бота
 async def keep_alive():
     """Отправляет сообщение каждую минуту для поддержания активности"""
-    admin_id = os.getenv("admin_id")  # Ваш ID в Telegram
+    admin_id = 1501361138  # Ваш ID в Telegram
     while True:
         try:
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -66,6 +81,11 @@ async def on_startup():
 
 
 async def main():
+    # Проверяем единственный экземпляр
+    if not check_single_instance():
+        print("[ERROR] Завершение работы бота")
+        sys.exit(1)
+    
     await on_startup()
     
     # Запускаем фейковый HTTP сервер в отдельном потоке
